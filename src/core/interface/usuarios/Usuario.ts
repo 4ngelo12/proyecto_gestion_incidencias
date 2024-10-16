@@ -12,3 +12,25 @@ export interface IUsuario {
     rol_id: number;
     rol_name: string;
 }
+
+export interface IUsuarioResponseTransformed {
+    message: string;
+    status: number;
+    data: IUsuarioTransformed[];
+}
+
+export interface IUsuarioTransformed {
+    id: number;
+    nombre_usuario: string;
+    email: string;
+    estado: boolean; // Aquí es boolean
+    rol_id: number;
+    rol_name: string;
+}
+
+
+export interface IUsuarioAside {
+    id: number;
+    nombre_usuario: string;
+    email: string;
+}

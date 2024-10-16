@@ -1,9 +1,9 @@
-import { ISeveridadResponse } from "../interface/severidad/Severidad";
-import baseUrl from "./helper";
+import { ISeveridadResponse } from "../../interface/severidad/Severidad";
+import baseUrl from "../helper";
 
 const token = localStorage.getItem('token');
 
-export const getRoles = async (): Promise<ISeveridadResponse> => {
+export const getSeveridades = async (): Promise<ISeveridadResponse> => {
     const response = await fetch(`${baseUrl}/severidad`, {
         method: 'GET',
         headers: {

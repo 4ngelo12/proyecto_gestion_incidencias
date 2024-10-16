@@ -33,7 +33,7 @@ const RegistrarUsuario: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true); // Estado para la carga de roles
 
     const getRoles = async () => {
-        setLoading(true); // Comienza a cargar
+        setLoading(true); 
         try {
             const rolesData = await fetchRoles(); // Llama a tu servicio para obtener roles
             setRoles(rolesData); // Almacena los roles en el estado
@@ -41,7 +41,7 @@ const RegistrarUsuario: React.FC = () => {
             showErrorAlert({ title: 'Error al obtener roles', text: 'Ocurrió un error al obtener los roles.' });
             setErrors({ username: error instanceof Error ? error.message : 'Error desconocido' });
         } finally {
-            setLoading(false); // Termina de cargar
+            setLoading(false);
         }
     };
 
@@ -86,12 +86,10 @@ const RegistrarUsuario: React.FC = () => {
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); // Previene la recarga de la página
+        e.preventDefault();
         
-        // Ejecutar la validación y solo proceder si no hay errores
         if (validate()) {
             try {
-                // Aquí iría la lógica para registrar al usuario solo si la validación pasa
                 const formulario: IRegistration = {
                     nombre_usuario: formData.username,
                     email: formData.email,
@@ -99,26 +97,20 @@ const RegistrarUsuario: React.FC = () => {
                     rol_id: selectedRole ?? 1, // Proporciona un valor por defecto
                 };
     
-                // Enviar la solicitud de registro
                 const response = await registerUser(formulario);
                 
-                // Verificar si la respuesta del servidor es exitosa
                 if (response.status === 201) {
                     showSuccessAlert({ title: 'Usuario registrado', text: 'El usuario ha sido registrado exitosamente.' });
                     
-                    // Limpiar los campos del formulario
                     setFormData({ username: '', email: '', password: '', confirmPassword: '' });
                 } else {
-                    // Mostrar error en caso de que la respuesta no sea exitosa
                     showErrorAlert({ title: 'Error en el registro', text: 'No se pudo registrar al usuario.' });
                 }
             } catch (error) {
-                // Mostrar error en caso de que falle la solicitud
                 showErrorAlert({ title: 'Error al registrar', text: 'Ocurrió un error al registrar al usuario.' });
                 setErrors({ username: error instanceof Error ? error.message : 'Error desconocido' });
             }
         } else {
-            // Si la validación falla, puedes mostrar un mensaje genérico de error o dejar que los errores del campo se muestren.
             showErrorAlert({ title: 'Error en la validación', text: 'Por favor, corrige los errores antes de enviar el formulario.' });
         }
     };
@@ -201,7 +193,7 @@ const RegistrarUsuario: React.FC = () => {
                         className="border w-full border-gray-300 rounded-md p-2"
                         disabled={loading} // Desactiva el select mientras carga
                     >
-                        <option value="" disabled>
+                        <option value="" disabled selected>
                             Seleccione un Rol
                         </option>
                         {loading ? (
