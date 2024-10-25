@@ -1,6 +1,6 @@
 import { ChevronLast, ChevronFirst } from "lucide-react"
 import { createContext, useContext, useState, ReactNode } from "react"
-import { Link, useLocation  } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 interface SidebarContextType {
     expanded: boolean;

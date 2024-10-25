@@ -1,5 +1,5 @@
 import { jwtDecode, JwtPayload } from "jwt-decode";
-import { IUsuarioAside, IUsuarioResponse, IUsuarioResponseTransformed } from "../../interface/usuarios/Usuario";
+import { IEditarUsuario, IUsuarioAside, IUsuarioResponse, IUsuarioResponseTransformed } from "../../interface/usuarios/Usuario";
 import baseUrl from "../helper";
 
 const token = localStorage.getItem('token');
@@ -32,15 +32,32 @@ export const getUsuarios = async (): Promise<IUsuarioResponseTransformed> => {
     // Transformar 'estado' en un valor booleano en el cliente
     const transformedData: IUsuarioResponseTransformed = {
         ...data,
-        data: data.data.map((usuario) => ({
+        data: Array.isArray(data.data) ? data.data.map((usuario) => ({
             ...usuario,
             estado: usuario.estado === 1 ? true : false // Convertir estado a booleano
-        }))
+        })) : []
     };
 
     return transformedData;
 };
 
+export const getUsuarioActivo = async (): Promise<IUsuarioResponse> => {
+    const response = await fetch(`${baseUrl}/users/activo`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    const data: IUsuarioResponse = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error en el servidor');
+    }
+
+    return data;
+};
 
 
 export const getUsuarioAside = async (): Promise<IUsuarioAside> => {
@@ -65,3 +82,42 @@ export const getUsuarioAside = async (): Promise<IUsuarioAside> => {
 
     return data;
 };
+
+
+export const getUsuarioById = async (id: string): Promise<IUsuarioResponse> => {
+    const response = await fetch(`${baseUrl}/users/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    const data: IUsuarioResponse = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error en el servidor');
+    }
+
+    return data;
+};
+
+export const actualizarUsuario = async (userData: IEditarUsuario, id: string): Promise<IUsuarioResponse> => {
+    const response = await fetch(`${baseUrl}/users/${id}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(userData),
+    });
+
+    const data: IUsuarioResponse = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error en el servidor');
+    }
+
+    return data;
+};
+

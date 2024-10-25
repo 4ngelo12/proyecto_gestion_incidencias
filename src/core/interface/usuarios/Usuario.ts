@@ -1,7 +1,7 @@
 export interface IUsuarioResponse {
     message: string;
     status: number;
-    data: IUsuario[];
+    data?: IUsuario;
 }
 
 export interface IUsuario {
@@ -16,7 +16,7 @@ export interface IUsuario {
 export interface IUsuarioResponseTransformed {
     message: string;
     status: number;
-    data: IUsuarioTransformed[];
+    data?: IUsuarioTransformed[];
 }
 
 export interface IUsuarioTransformed {
@@ -33,4 +33,12 @@ export interface IUsuarioAside {
     id: number;
     nombre_usuario: string;
     email: string;
+}
+
+export interface IEditarUsuario {
+    id: number;
+    nombre_usuario: string;
+    email: string;
+    password?: string;
+    rol_id: number;
 }

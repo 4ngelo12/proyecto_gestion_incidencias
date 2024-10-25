@@ -1,5 +1,5 @@
-import { RolesResponse } from "../interface/Rol";
-import baseUrl from "./helper";
+import { RolesResponse } from "../../interface/usuarios/Rol";
+import baseUrl from "../helper";
 
 const token = localStorage.getItem('token');
 

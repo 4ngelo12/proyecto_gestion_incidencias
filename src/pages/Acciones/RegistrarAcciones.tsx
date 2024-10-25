@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import './styles/RegistrarIncidencias.scss'
-import { getCategorias } from '../../core/services/incidencias/CategoriaService';
-import { ICategoriaResponse } from '../../core/interface/categorias/Categotia';
 import { showErrorAlert, showSuccessAlert } from '../../core/services/alerts/AlertsService';
-import { getSeveridades } from '../../core/services/incidencias/SeveridadService';
-import { ISeveridadResponse } from '../../core/interface/severidad/Severidad';
-import { jwtDecode } from 'jwt-decode';
-import { registrarIncidencia } from '../../core/services/incidencias/IncidenciaService';
+import { getIncidenciaActivo, patchIncidenciaCerrar } from '../../core/services/incidencias/IncidenciaService';
+import { ICerrarIncidencia, IncidenciasResponse } from '../../core/interface/incidencias/Incidencias';
+import { IUsuarioResponse } from '../../core/interface/usuarios/Usuario';
+import { getUsuarioActivo } from '../../core/services/usuarios/UsuarioService';
+import { registrarAcciones } from '../../core/services/acciones/AccionesService';
 
-const RegistrarIncidente: React.FC = () => {
-    const [nombre, setNombre] = useState<string>('');
+const RegistrarAcciones: React.FC = () => {
     const [descripcion, setDescripcion] = useState<string>('');
     const maxChars = 350;
     const [imagen, setImagen] = useState<File | null>(null);
@@ -17,68 +14,63 @@ const RegistrarIncidente: React.FC = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Estados para los datos de cada select y la carga
-    const [CategoriasOptions, setCategoriasOptions] = useState<ICategoriaResponse | null>(null);
-    const [loadingCategorias, setLoadingCategorias] = useState<boolean>(true);
-    const [selectedCategorias, setSelectedCategorias] = useState<number>();
+    const [incidenciaOptions, setIncidenciaOptions] = useState<IncidenciasResponse | null>(null);
+    const [loadingIncidencias, setLoadingIncidencias] = useState<boolean>(true);
+    const [selectedIncidencias, setSelectedIncidencias] = useState<number>();
 
-    const [SeveridadOptions, setSeveridadOptions] = useState<ISeveridadResponse | null>(null);
-    const [loadingSeveridad, setLoadingSeveridad] = useState<boolean>(true);
-    const [selectedSeveridades, setSelectedSeveridades] = useState<number>();
+    const [usuarioOptions, setUsuarioOptions] = useState<IUsuarioResponse | null>(null);
+    const [loadingUsuario, setLoadingUsuario] = useState<boolean>(true);
+    const [selectedUsuarios, setSelectedUsuarios] = useState<number>();
 
     const handleDescripcionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const value = e.target.value;
         setDescripcion(value);
     };
 
-    const obtenerCategorias = async () => {
-        setLoadingCategorias(true);
+    const obtenerIncidenciasActivas = async () => {
+        setLoadingIncidencias(true);
         try {
-            const categoriasData = await getCategorias(); // Llama a tu servicio para obtener roles
-            setCategoriasOptions(categoriasData); // Almacena los roles en el estado
+            const categoriasData = await getIncidenciaActivo();
+            setIncidenciaOptions(categoriasData);
         } catch (error) {
-            showErrorAlert({ title: 'Error al obtener las categorias', text: 'Ocurrió un error al obtener los categorias.' });
+            showErrorAlert({ title: 'Error al obtener las incidencias', text: 'Ocurrió un error al obtener los incidencias.' });
             setErrors({ username: error instanceof Error ? error.message : 'Error desconocido' });
         } finally {
-            setLoadingCategorias(false);
+            setLoadingIncidencias(false);
         }
     };
 
     const handleCategoriaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedCategorias(Number(e.target.value)); // Actualiza el rol seleccionado
+        setSelectedIncidencias(Number(e.target.value));
     };
 
-    const obtenerSeveridades = async () => {
-        setLoadingSeveridad(true);
+    const obtenerUsuariosActivos = async () => {
+        setLoadingUsuario(true);
         try {
-            const severidadData = await getSeveridades(); // Llama a tu servicio para obtener roles
-            setSeveridadOptions(severidadData); // Almacena los roles en el estado
+            const severidadData = await getUsuarioActivo(); // Llama a tu servicio para obtener roles
+            setUsuarioOptions(severidadData); // Almacena los roles en el estado
         } catch (error) {
-            showErrorAlert({ title: 'Error al obtener las categorias', text: 'Ocurrió un error al obtener los categorias.' });
+            showErrorAlert({ title: 'Error al obtener los usuarios', text: 'Ocurrió un error al obtener los usuarios' });
             setErrors({ username: error instanceof Error ? error.message : 'Error desconocido' });
         } finally {
-            setLoadingSeveridad(false);
+            setLoadingUsuario(false);
         }
     };
 
     const handleSeveridadChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedSeveridades(Number(e.target.value)); // Actualiza el rol seleccionado
+        setSelectedUsuarios(Number(e.target.value)); // Actualiza el rol seleccionado
     };
 
     // Llamadas a las APIs en diferentes momentos
     useEffect(() => {
-        obtenerCategorias();
-        obtenerSeveridades();
+        obtenerIncidenciasActivas();
+        obtenerUsuariosActivos();
     }, []);
 
     // Función para manejar la validación del formulario
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const nuevosErrores: Record<string, string> = {};
-
-        // Validación del campo nombre
-        if (nombre.length < 5) {
-            nuevosErrores.nombre = 'El nombre debe tener al menos 5 caracteres.';
-        }
 
         if (descripcion.length < 10) {
             nuevosErrores.descripcion = 'La descripción debe tener al menos 10 caracteres.';
@@ -104,46 +96,40 @@ const RegistrarIncidente: React.FC = () => {
             nuevosErrores.fecha = 'Debe seleccionar una fecha.';
         }
 
-        if (!selectedCategorias) {
+        if (!selectedIncidencias) {
             nuevosErrores.select1 = 'Debe seleccionar una categoría.';
         }
 
-        if (!selectedSeveridades) {
+        if (!selectedUsuarios) {
             nuevosErrores.select2 = 'Debe seleccionar una severidad.';
         }
 
-        const token = localStorage.getItem('token');
-        const decoded = token ? jwtDecode(token) : null;
-
-        if (!decoded) {
-            throw new Error('Token is invalid or missing');
-        }
-        const id: number = decoded?.sub ? Number(decoded.sub) : 0;
-
         const formData = new FormData();
-        formData.append('nombre', nombre);
         formData.append('descripcion', descripcion);
         formData.append('imagen', imagen as Blob); // Asegúrate de que no sea null
-        formData.append('fecha_reporte', fecha);
-        formData.append('categoria_id', selectedCategorias!.toString());
-        formData.append('severidad_id', selectedSeveridades!.toString());
-        formData.append('usuario_reporte_id', id.toString());
+        formData.append('fecha_accion', fecha);
+        formData.append('incidencia_id', selectedIncidencias!.toString());
+        formData.append('usuario_id', selectedUsuarios!.toString());
 
         // Si hay errores, los mostramos
         if (Object.keys(nuevosErrores).length > 0) {
             setErrors(nuevosErrores);
         } else {
             try {
-                await registrarIncidencia(formData);
+                const result = await registrarAcciones(formData);
                 showSuccessAlert({ title: 'Incidencia registrada', text: 'La incidencia se ha registrado con éxito.' });
                 setErrors({});
 
-                setNombre('');
                 setDescripcion('');
                 setImagen(null);
                 setFecha('');
-                setSelectedCategorias(undefined);
-                setSelectedSeveridades(undefined);
+                setSelectedIncidencias(undefined);
+                setSelectedUsuarios(undefined);
+
+                cerrarIncidencia({
+                    id: Number(result.data.incidencia_id), estado_incidente_id: 2,
+                    fecha_cierre: result.data?.fecha_accion
+                });
             } catch (error) {
                 showErrorAlert({ title: 'Error al registrar la incidencia', text: error instanceof Error ? error.message : 'Error desconocido' });
                 setErrors({ general: 'Ocurrió un error al registrar la incidencia.' });
@@ -151,24 +137,21 @@ const RegistrarIncidente: React.FC = () => {
         }
     };
 
+    const cerrarIncidencia = async (data: ICerrarIncidencia) => {
+        try {
+            await patchIncidenciaCerrar(data);
+            showSuccessAlert({ title: 'Incidencia cerrada', text: 'La incidencia se ha cerrado con éxito.' });
+        } catch (error) {
+            showErrorAlert({ title: 'Error al cerrar la incidencia', text: error instanceof Error ? error.message : 'Error desconocido' });
+        }
+    }
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">
             <div >
-                <h2 className="text-2xl font-bold mb-4 text-center">Registrar Incidencias</h2>
+                <h2 className="text-2xl font-bold mb-4 text-center">Registrar Acciones</h2>
             </div>
-
             <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 max-w-xl mx-auto p-4 bg-white shadow-md rounded-md">
-                <div className="mb-4 w-full">
-                    <label className="block text-gray-700">Nombre</label>
-                    <input
-                        type="text"
-                        value={nombre}
-                        onChange={(e) => setNombre(e.target.value)}
-                        className="w-full py-1 ps-3 pe-2 border border-gray-300 rounded-md focus:outline-none"
-                    />
-                    {errors.nombre && <p className="text-red-500 text-sm">{errors.nombre}</p>}
-                </div>
-
                 <div className="mb-4 w-full">
                     <label className="block text-gray-700">Descripción</label>
                     <textarea
@@ -199,7 +182,7 @@ const RegistrarIncidente: React.FC = () => {
                 </div>
 
                 <div className="mb-4 w-full">
-                    <label className="block text-gray-700">Fecha de Reporte</label>
+                    <label className="block text-gray-700">Fecha de Acción</label>
                     <input
                         type="date"
                         value={fecha}
@@ -212,19 +195,19 @@ const RegistrarIncidente: React.FC = () => {
 
                 {/* Select 1 */}
                 <div className="mb-4 w-calc">
-                    <label htmlFor="categoriaSelect" className="block text-gray-700">Categoría</label>
+                    <label htmlFor="categoriaSelect" className="block text-gray-700">Incidente</label>
                     <select
                         id="categoriaSelect"
-                        value={selectedCategorias || ""}
+                        value={selectedIncidencias || ""}
                         onChange={handleCategoriaChange}
                         className="w-full py-1 ps-3 pe-2 border border-gray-300 rounded-md focus:outline-none"
-                        disabled={loadingCategorias}
+                        disabled={loadingIncidencias}
                     >
-                        {selectedCategorias === undefined || selectedCategorias === null ? (
+                        {selectedIncidencias === undefined || selectedIncidencias === null ? (
                             <option value="" disabled>Seleccione una opción</option>
                         ) : null}
                         {(
-                            CategoriasOptions?.data ? CategoriasOptions?.data.map((cat) => (
+                            Array.isArray(incidenciaOptions?.data) ? incidenciaOptions?.data.map((cat) => (
                                 <option key={cat.id} value={cat.id}>
                                     {cat.nombre}
                                 </option>
@@ -235,21 +218,21 @@ const RegistrarIncidente: React.FC = () => {
                 </div>
 
                 <div className="mb-4 w-calc">
-                    <label htmlFor="severidadSelect" className="block text-gray-700">Severidad</label>
+                    <label htmlFor="severidadSelect" className="block text-gray-700">Usuario</label>
                     <select
                         id="severidadSelect"
-                        value={selectedSeveridades || ""}
+                        value={selectedUsuarios || ""}
                         onChange={handleSeveridadChange}
                         className="w-full py-1 ps-3 pe-2 border border-gray-300 rounded-md focus:outline-none"
-                        disabled={loadingSeveridad}
+                        disabled={loadingUsuario}
                     >
-                        {selectedSeveridades === undefined || selectedSeveridades === null ? (
+                        {selectedUsuarios === undefined || selectedUsuarios === null ? (
                             <option value="" disabled>Seleccione una opción</option>
                         ) : null}
                         {(
-                            SeveridadOptions?.data ? SeveridadOptions?.data.map((severidad) => (
-                                <option key={severidad.id} value={severidad.id}>
-                                    {severidad.nombre}
+                            Array.isArray(usuarioOptions?.data) ? usuarioOptions?.data.map((usuario) => (
+                                <option key={usuario.id} value={usuario.id}>
+                                    {usuario.nombre_usuario}
                                 </option>
                             )) : <option>Sin opciones disponibles</option>
                         )}
@@ -265,4 +248,4 @@ const RegistrarIncidente: React.FC = () => {
     );
 };
 
-export default RegistrarIncidente;
+export default RegistrarAcciones;

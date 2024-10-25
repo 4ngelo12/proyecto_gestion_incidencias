@@ -2,7 +2,7 @@ export interface Incidencias {
     nombre: string;
     descripcion: string;
     imagen: string;
-    fecha_reporte: number;
+    fecha_reporte: Date;
     severidad_id: number;
     categoria_id: number;
     usuario_reporte_id: number; 
@@ -11,7 +11,7 @@ export interface Incidencias {
 export interface IncidenciasResponse {
     status: number;
     message: string;
-    data: Data;
+    data?: Data;
 }
 
 export interface Data {
@@ -28,4 +28,18 @@ export interface Data {
     severidad_name: string;
     categoria_name: string;
     usuario_reporte_name: string;
+}
+
+export interface ICerrarIncidencia {
+    id: number;
+    estado_incidente_id: number;
+    fecha_cierre: Date;
+}
+
+export interface IUpdateIncidencias {
+    nombre: string;
+    descripcion: string;
+    fecha_reporte: string;
+    severidad_id: number;
+    categoria_id: number;
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getRoles as fetchRoles } from '../../core/services/RolService';
-import { RolesResponse } from '../../core/interface/Rol';
+import { getRoles as fetchRoles } from '../../core/services/usuarios/RolService';
+import { RolesResponse } from '../../core/interface/usuarios/Rol';
 import { showErrorAlert, showSuccessAlert } from '../../core/services/alerts/AlertsService';
 import { registerUser } from '../../core/services/auth/AuthService';
 import { IRegistration } from '../../core/interface/Auth';
@@ -116,10 +116,14 @@ const RegistrarUsuario: React.FC = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex flex-col items-center justify-center min-h-screen">
+            <div >
+                <h2 className="text-2xl font-bold mb-4 text-center">Registrar Usuarios</h2>
+            </div>
+
             <form
                 onSubmit={handleSubmit}
-                className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md"
+                className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md border-black"
             >
                 <h2 className="text-2xl font-bold mb-6 text-center">Registro</h2>
                 <div className="mb-2">
@@ -188,12 +192,12 @@ const RegistrarUsuario: React.FC = () => {
                     </label>
                     <select
                         id="roleSelect"
-                        value={selectedRole}
+                        value={selectedRole || ''}
                         onChange={handleRoleChange}
                         className="border w-full border-gray-300 rounded-md p-2"
                         disabled={loading} // Desactiva el select mientras carga
                     >
-                        <option value="" disabled selected>
+                        <option value="" disabled>
                             Seleccione un Rol
                         </option>
                         {loading ? (
