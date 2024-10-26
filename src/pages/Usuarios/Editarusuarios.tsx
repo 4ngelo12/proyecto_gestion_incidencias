@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { getRoles as fetchRoles } from '../../core/services/usuarios/RolService';
 import { RolesResponse } from '../../core/interface/usuarios/Rol';
-import { showErrorAlert, showSuccessAlert } from '../../core/services/alerts/AlertsService';
+import { showConfirmationAlert, showErrorAlert, showSuccessAlert } from '../../core/services/alerts/AlertsService';
 import { useNavigate, useParams } from 'react-router-dom';
 import { actualizarUsuario, getUsuarioById } from '../../core/services/usuarios/UsuarioService';
 import { IEditarUsuario, IUsuarioResponse } from '../../core/interface/usuarios/Usuario';
@@ -107,6 +107,9 @@ const EditarUsuario: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const confirmation = await showConfirmationAlert({ title: '¿Estás seguro?', text: '¿Deseas continuar con esta acción?' });
+        if (!confirmation) return;
 
         if (validate()) {
             try {

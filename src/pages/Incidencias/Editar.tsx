@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './styles/RegistrarIncidencias.scss'
 import { getCategorias } from '../../core/services/incidencias/CategoriaService';
 import { ICategoriaResponse } from '../../core/interface/categorias/Categotia';
-import { showErrorAlert, showSuccessAlert } from '../../core/services/alerts/AlertsService';
+import { showConfirmationAlert, showErrorAlert, showSuccessAlert } from '../../core/services/alerts/AlertsService';
 import { getSeveridades } from '../../core/services/incidencias/SeveridadService';
 import { ISeveridadResponse } from '../../core/interface/severidad/Severidad';
 import { jwtDecode } from 'jwt-decode';
@@ -122,6 +122,10 @@ const EditarIncidente: React.FC = () => {
     // Función para manejar la validación del formulario
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const confirmation = await showConfirmationAlert({ title: '¿Estás seguro?', text: '¿Deseas continuar con esta acción?' });
+        if (!confirmation) return;
+
         const nuevosErrores: Record<string, string> = {};
 
         // Validación del campo nombre
@@ -285,7 +289,9 @@ const EditarIncidente: React.FC = () => {
                             {errors.select2 && <p className="text-red-500 text-sm">{errors.select2}</p>}
                         </div>
 
-                        <button type="submit" className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
+                        <button type="submit" className="w-full bg-blue-500 text-white py-2 px-4 rounded-md 
+                        hover:bg-blue-600"
+                        >
                             Enviar
                         </button>
                     </form>

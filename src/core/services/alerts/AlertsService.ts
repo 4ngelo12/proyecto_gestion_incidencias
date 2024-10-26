@@ -31,3 +31,15 @@ export const showErrorAlert = ({ title = 'Error', text }: AlertProps) => {
         confirmButtonText: 'Aceptar',
     });
 };
+
+export const showConfirmationAlert = async ({ title = '¿Estás seguro?', text = '¿Deseas continuar con esta acción?' }: AlertProps) => {
+    const result = await Swal.fire({
+        title: title,
+        text: text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No',
+    });
+    return result.isConfirmed;
+};

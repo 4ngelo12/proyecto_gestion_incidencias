@@ -16,8 +16,11 @@ export const registrarAcciones = async (accionesData: FormData): Promise<IAccion
 
         return response.data;
     } catch (error) {
-        console.error(error);
-        throw new Error('Error en el servidor al registrar la incidencia.');
+        if (axios.isAxiosError(error)) {
+            throw new Error(error.response?.data.message);
+        } else {
+            throw new Error('An unexpected error occurred');
+        }
     }
 };
 

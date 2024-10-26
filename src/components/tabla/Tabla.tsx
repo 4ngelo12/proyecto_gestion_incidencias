@@ -17,6 +17,7 @@ interface TableComponentProps {
   rowsPerPage: number;
   maxChars?: number;
   generatePdf?: boolean;
+  urlPdf?: string;
   isEditable?: boolean;
   onEdit?: (id: number, baseUrl: string) => void; // Prop para manejar la redirección de edición
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,6 +30,7 @@ const TableComponent: React.FC<TableComponentProps> = ({
   rowsPerPage,
   maxChars = 20,
   generatePdf = false,
+  urlPdf,
   isEditable = true,
   onEdit,
   isRowEditable,
@@ -120,7 +122,7 @@ const TableComponent: React.FC<TableComponentProps> = ({
 
           {generatePdf && (
             <button
-              onClick={() => downloadPDF(usuarioId, data[rowIndex].id)}
+              onClick={() => urlPdf && downloadPDF(urlPdf, usuarioId, data[rowIndex].id)}
               className="text-cyan-500 hover:underline"
             >
               <FileText />

@@ -34,7 +34,7 @@ const ListaIncidencias = () => {
             <h1 className="text-2xl font-bold mb-4 text-center">Lista de Incidencias</h1>
 
             <TableComponent titulo='Reporte de Incidencias' columns={incidenciasColumnas} data={Array.isArray(incidencias?.data) ? incidencias.data : []}
-                rowsPerPage={10} maxChars={11} isEditable={true}
+                rowsPerPage={10} maxChars={11} isEditable={true} urlPdf='incidencia'
                 generatePdf={true} onEdit={handleEdit} isRowEditable={(row) => row.estado_incidente_id === 1} />
         </div>
     )

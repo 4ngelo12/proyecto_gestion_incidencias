@@ -117,7 +117,7 @@ const RegistrarAcciones: React.FC = () => {
         } else {
             try {
                 const result = await registrarAcciones(formData);
-                showSuccessAlert({ title: 'Incidencia registrada', text: 'La incidencia se ha registrado con éxito.' });
+                showSuccessAlert({ title: 'Incidencia registrada', text: 'La acción se ha registrado con éxito.' });
                 setErrors({});
 
                 setDescripcion('');
@@ -131,8 +131,13 @@ const RegistrarAcciones: React.FC = () => {
                     fecha_cierre: result.data?.fecha_accion
                 });
             } catch (error) {
-                showErrorAlert({ title: 'Error al registrar la incidencia', text: error instanceof Error ? error.message : 'Error desconocido' });
-                setErrors({ general: 'Ocurrió un error al registrar la incidencia.' });
+                if (error instanceof Error) {
+                    console.log(error.message);
+                } else {
+                    console.log('Error desconocido');
+                }
+                showErrorAlert({ title: 'Error al registrar la acción', text: error instanceof Error ? error.message : 'Error desconocido' });
+                setErrors({ general: 'Ocurrió un error al registrar la acción.' });
             }
         }
     };

@@ -27,8 +27,9 @@ const ListaAcciones = () => {
         <div className="py-12 px-6 flex flex-col ">
             <h1 className="text-2xl font-bold mb-4 text-center">Lista de Acciones</h1>
 
-            <TableComponent titulo='Reporte de Acciones' columns={incidenciasColumnas} data={Array.isArray(acciones?.data) ? acciones.data : []} 
-                rowsPerPage={10} maxChars={15} isEditable={false} generatePdf={true}/>
+            <TableComponent titulo='Reporte de Acciones' columns={incidenciasColumnas} 
+                data={Array.isArray(acciones?.data) ? acciones.data : []} rowsPerPage={10} maxChars={15} isEditable={false} 
+                urlPdf='acciones' generatePdf={true}/>
         </div>
     )
 }

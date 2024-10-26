@@ -3,9 +3,9 @@ import axios from 'axios';
 
 const token = localStorage.getItem('token');
 
-export const downloadPDF = async (idUsuario: number, id: number) => {
+export const downloadPDF = async (reporte: string, idUsuario: number, id: number) => {
     try {
-        const response = await axios.get(`${baseUrl}/reporte/${idUsuario}/incidencias/${id}/pdf`, {
+        const response = await axios.get(`${baseUrl}/reporte/${idUsuario}/${reporte}/${id}/pdf`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
