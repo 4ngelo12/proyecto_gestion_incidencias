@@ -3,6 +3,8 @@ import { IEditarUsuario, IUsuarioAside, IUsuarioResponse, IUsuarioResponseTransf
 import baseUrl from "../helper";
 
 const token = localStorage.getItem('token');
+let isDeleting = false;
+
 interface CustomJwtPayload extends JwtPayload {
     email?: string;
     userName?: string;
@@ -72,7 +74,7 @@ export const getUsuarioAside = async (): Promise<IUsuarioAside> => {
         id,
         email,
         nombre_usuario
-      };
+    };
 
     const data: IUsuarioAside = response;
 
@@ -121,3 +123,38 @@ export const actualizarUsuario = async (userData: IEditarUsuario, id: string): P
     return data;
 };
 
+export const eliminarUsuario = async (id: number) => {
+    if (isDeleting) return;
+
+    isDeleting = true;
+
+    try {
+        await fetch(`${baseUrl}/users/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+    } finally {
+        isDeleting = false;
+    }
+}
+
+export const reactivarUsuario = async (id: number) => {
+    if (isDeleting) return;
+
+    isDeleting = true;
+
+    try {
+        await fetch(`${baseUrl}/users/recovery/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+    } finally {
+        isDeleting = false;
+    }
+}

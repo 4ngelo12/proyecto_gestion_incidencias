@@ -3,6 +3,7 @@ import baseUrl from "../helper";
 import axios from 'axios';
 
 const token = localStorage.getItem('token');
+let isDeleting = false;
 
 export const registrarIncidencia = async (incidenciaData: FormData): Promise<IncidenciasResponse> => {
     try {
@@ -110,3 +111,21 @@ export const actualizarIncidencia = async (incidenciaData: IUpdateIncidencias, i
         throw new Error('Error en el servidor al actualizar la incidencia.');
     }
 };
+
+export const eliminarIncidencia = async (id: number) => {
+    if (isDeleting) return;
+
+    isDeleting = true;
+
+    try {
+        await fetch(`${baseUrl}/incidencia/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+    } finally {
+        isDeleting = false;
+    }
+}

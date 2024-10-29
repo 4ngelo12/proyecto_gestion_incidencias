@@ -29,7 +29,7 @@ const ListaAcciones = () => {
 
             <TableComponent titulo='Reporte de Acciones' columns={incidenciasColumnas} 
                 data={Array.isArray(acciones?.data) ? acciones.data : []} rowsPerPage={10} maxChars={15} isEditable={false} 
-                urlPdf='acciones' generatePdf={true}/>
+                isDeleteable={() => false} isRecovery={() => false} urlPdf='acciones' generatePdf={true}/>
         </div>
     )
 }

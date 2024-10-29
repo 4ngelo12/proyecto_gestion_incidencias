@@ -2,7 +2,7 @@ import Swal from 'sweetalert2';
 
 interface AlertProps {
     title?: string;
-    text: string;
+    text?: string;
 }
 
 export const showInformationAlert = ({ title = 'Información', text }: AlertProps) => {
@@ -14,7 +14,7 @@ export const showInformationAlert = ({ title = 'Información', text }: AlertProp
     });
 };
 
-export const showSuccessAlert = ({ title = 'Éxito', text }: AlertProps) => {
+export const showSuccessAlert = ({ title = 'Proceso finalizado', text = 'Operación completada exitosamente' }: AlertProps = {}) => {
     Swal.fire({
         title: title,
         text: text,
@@ -32,14 +32,19 @@ export const showErrorAlert = ({ title = 'Error', text }: AlertProps) => {
     });
 };
 
-export const showConfirmationAlert = async ({ title = '¿Estás seguro?', text = '¿Deseas continuar con esta acción?' }: AlertProps) => {
+export const showConfirmationAlert = async ({ title = '¿Estás seguro?',
+    text = '¿Deseas continuar con esta acción?' }: AlertProps = {}) => {
     const result = await Swal.fire({
         title: title,
         text: text,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Sí',
-        cancelButtonText: 'No',
+        confirmButtonText: 'Continuar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'bg-green-600', 
+            cancelButton: 'bg-red-600',
+        },
     });
     return result.isConfirmed;
 };
