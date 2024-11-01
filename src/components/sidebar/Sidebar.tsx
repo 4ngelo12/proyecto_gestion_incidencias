@@ -1,5 +1,5 @@
 import { ChevronLast, ChevronFirst } from "lucide-react"
-import { createContext, useContext, useState, ReactNode } from "react"
+import { createContext, useContext, useState, ReactNode, useEffect } from "react"
 import { Link, useLocation } from "react-router-dom";
 
 interface SidebarContextType {
@@ -17,7 +17,7 @@ export default function Sidebar({ children, userName, email }: { children: React
             <nav className="h-full flex flex-col bg-white border-r shadow-sm">
                 <div className="p-4 pb-2 flex justify-between items-center">
                     <img
-                        src="https://img.logoipsum.com/243.svg"
+                        src="/public/logo.png"
                         className={`overflow-hidden transition-all ${expanded ? "w-32" : "w-0"
                             }`}
                         alt=""
@@ -72,17 +72,22 @@ export function SidebarItem({ icon, text, alert, subItems }: SidebarItemProps) {
     const location = useLocation(); // Obtener la ubicación actual
     const [isDropdownOpen, setDropdownOpen] = useState(false);
 
+    // useEffect para cerrar el dropdown automáticamente si expanded es false
+    useEffect(() => {
+        if (!expanded) {
+            setDropdownOpen(false);
+        }
+    }, [expanded]); // Dependencia en expanded
+
     const handleToggleDropdown = () => {
         setDropdownOpen(!isDropdownOpen);
     };
 
     const isActive = () => {
-        // Comprobar si la ruta actual coincide con la ruta del texto principal
         return location.pathname === `/${text.toLowerCase()}`;
     };
 
     const isSubItemActive = (subItemPath: string) => {
-        // Comprobar si la ruta actual coincide con la ruta de un subitem
         return location.pathname === subItemPath;
     };
 
@@ -155,5 +160,4 @@ export function SidebarItem({ icon, text, alert, subItems }: SidebarItemProps) {
             )}
         </li>
     );
-
 }

@@ -1,4 +1,5 @@
 import { IRegistration, IRegistrationResponse, LoginResponse } from "../../interface/Auth";
+import { IChangePasswordResponse } from "../../interface/Recovery";
 import baseUrl from "../helper";
 
 export const registerUser = async (userData: IRegistration): Promise<IRegistrationResponse> => {
@@ -38,8 +39,20 @@ export const loginUser = async (email: string, password: string): Promise<LoginR
     return data;
 };
 
-// Puedes agregar otras funciones para interactuar con tu API, por ejemplo:
-export const logoutUser = () => {
-    // Elimina el token del almacenamiento
-    localStorage.removeItem('token');
+export const changePassword = async (token: string, password: string): Promise<IChangePasswordResponse> => {
+    const response = await fetch(`${baseUrl}/reset-password`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, password }),
+    });
+
+    const data: IChangePasswordResponse = await response.json();
+    
+    if (!response.ok) {
+        throw new Error(data.message);
+    }
+
+    return data;
 };

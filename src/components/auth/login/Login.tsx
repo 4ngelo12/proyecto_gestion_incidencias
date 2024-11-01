@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Para redireccionar
-import { loginUser } from '../../core/services/auth/AuthService';
+import { Link, useNavigate } from 'react-router-dom'; // Para redireccionar
+import { loginUser } from '../../../core/services/auth/AuthService';
+import { useAuth } from '../../../core/services/auth/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState<string>('');
@@ -8,34 +9,38 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const response = await loginUser(email, password); // Función que consume tu API
-
+      const response = await loginUser(email, password);
+      
       if (response.status === 200) {
-        localStorage.setItem('token', response.token); // Guarda el token
-        navigate('/'); // Redirige al dashboard
+        localStorage.setItem('token', response.token);
+        login(response.token);
+        navigate('/dashboard');
       }
+      
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Error desconocido');
     } finally {
       setIsLoading(false);
+      window.location.reload();
     }
   };
 
   return (
     <>
-      <div className="px-6 py-12 w-full md:w-5/12 bg-zinc-400 absolute top-1/2 left-1/2 
+      <div className="px-6 py-12 w-full md:w-5/12 bg-stone-200 absolute top-1/2 left-1/2 
             rounded-md -translate-x-1/2 -translate-y-1/2">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
             alt="Your Company"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-            className="mx-auto h-10 w-auto"
+            src="/public/logo.png"
+            className="mx-auto h-fit w-full"
           />
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Inicio de Sesión
@@ -69,9 +74,9 @@ export default function Login() {
                   Password
                 </label>
                 <div className="text-sm">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                    Forgot password?
-                  </a>
+                  <Link to="/recuperar-contrasena" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                    Recuperar Contraseña
+                  </Link>
                 </div>
               </div>
               <div className="mt-2">
@@ -94,8 +99,8 @@ export default function Login() {
             <div>
               <button
                 type="submit"
-                className={`flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold
-          text-white shadow-sm hover:bg-indigo-500 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`flex w-full justify-center rounded-md bg-sky-600 px-3 py-1.5 text-sm font-semibold
+          text-white shadow-sm hover:bg-cyan-800 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 disabled={isLoading} // Deshabilitar cuando isLoading es true
               >
                 {isLoading ? (

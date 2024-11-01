@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logoutUser } from '../../core/services/auth/AuthService';
+import { useAuth } from '../../../core/services/auth/AuthContext';
 
 interface LogoutProps {
     children: ReactNode;
@@ -8,10 +8,11 @@ interface LogoutProps {
 
 const Logout: React.FC<LogoutProps> = ({ children }) => {
     const navigate = useNavigate();
+    const { logout } = useAuth();
 
     const handleLogout = () => {
-        logoutUser(); // Lógica para eliminar el token o limpiar la sesión
-        navigate('/login'); // Redirige al login después de cerrar sesión
+        logout();
+        navigate('/login'); 
     };
 
     return (
